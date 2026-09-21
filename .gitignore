@@ -3,4 +3,4 @@ launcher/sdk
 .vscode
 python/*.build
 python/*.dist
-internal/*.zip
+integrator/*.zip

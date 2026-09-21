@@ -1,7 +1,7 @@
-#define MyAppName "Elsana"
+#define MyAppName "Integrator"
 #define MyAppVersion "1.0.0"
-#define MyAppPublisher "Elsana"
-#define MyAppExeName "elsana.exe"
+#define MyAppPublisher "Integrator"
+#define MyAppExeName "app.exe"
 
 [Setup]
 AppId={{7D2B4F9A-1E63-4F2A-9B71-5C8E3A6D2041}
@@ -9,13 +9,13 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 
-DefaultDirName={autopf}\Elsana
-DefaultGroupName=Elsana
+DefaultDirName={autopf}\{#MyAppName}
+DefaultGroupName={#MyAppPublisher}
 
-SetupIconFile=Elsana.ico
+SetupIconFile=Installer.ico
 
 OutputDir=..\integrator\build\bin
-OutputBaseFilename=Elsana-Setup
+OutputBaseFilename=app-setup
 
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
@@ -26,10 +26,10 @@ Compression=lzma
 SolidCompression=yes
 
 WizardStyle=modern
-WizardImageFile=164x314.bmp
-WizardSmallImageFile=55x55.bmp
+WizardImageFile=InstallerBg-164x314.bmp
+WizardSmallImageFile=InstallerBg-55x55.bmp
 
-UninstallDisplayIcon={app}\elsana.exe
+UninstallDisplayIcon={app}\{#MyAppName}
 
 [Languages]
 Name: "indonesian"; MessagesFile: "compiler:Languages\Indonesian.isl"
@@ -40,12 +40,12 @@ Source: "..\integrator\build\bin\windows\*"; \
     Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\Elsana"; \
-    Filename: "{app}\elsana.exe"; \
+Name: "{group}\{#MyAppPublisher}"; \
+    Filename: "{app}\{#MyAppName}"; \
     Tasks: startmenu
 
-Name: "{autodesktop}\Elsana"; \
-    Filename: "{app}\elsana.exe"; \
+Name: "{autodesktop}\{#MyAppPublisher}"; \
+    Filename: "{app}\{#MyAppName}"; \
     Tasks: desktop
 
 [Tasks]
@@ -58,6 +58,6 @@ Name: "desktop"; \
     GroupDescription: "Shortcuts:"
 
 [Run]
-Filename: "{app}\elsana.exe"; \
-    Description: "Launch Elsana"; \
+Filename: "{app}\{#MyAppName}"; \
+    Description: "Launch {#MyAppName}"; \
     Flags: nowait postinstall skipifsilent

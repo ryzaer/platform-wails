@@ -19,7 +19,7 @@ set "PYTHON_DIST=%PYTHON%\renderer.dist"
 set "PYTHON_RENDERER=%PYTHON_DIST%\renderer.dll"
 
 set "ISCC=C:\Program Files\Inno Setup 7\ISCC.exe"
-set "ISS=%ROOT%installer\Elsana.iss"
+set "ISS=%ROOT%launcher\Installer.iss"
 
 echo ROOT       : %ROOT%
 echo PYTHON     : %PYTHON%
@@ -97,35 +97,6 @@ echo Output directories OK
 echo.
 
 REM ============================================================
-REM [3/9] Build Frontend
-REM ============================================================
-
-echo [3/9] Building frontend...
-echo.
-
-cd /d "%ROOT%cmd\server" || (
-    echo ERROR: Cannot enter frontend directory.
-    exit /b 1
-)
-
-call npm run build
-
-if errorlevel 1 (
-    echo.
-    echo ERROR: Failed to build frontend.
-    exit /b 1
-)
-
-if not exist "dist" (
-    echo.
-    echo ERROR: Frontend dist directory was not generated.
-    exit /b 1
-)
-
-echo Frontend OK
-echo.
-
-REM ============================================================
 REM [4/9] Build Wails integrator.dll
 REM ============================================================
 
@@ -166,85 +137,12 @@ if not exist "%INTEGRATOR%\integrator.dll" (
 echo integrator.dll OK
 echo.
 
-REM ============================================================
-REM [5/9] Build Windows runtime.dll
-REM ============================================================
-
-echo [5/9] Building Windows runtime.dll...
-echo.
-
-cd /d "%ROOT%" || (
-    echo ERROR: Cannot enter project root.
-    exit /b 1
-)
-
-set "GOOS=windows"
-set "GOARCH=amd64"
-set "CGO_ENABLED=1"
-set "PATH=C:\msys64\ucrt64\bin;%PATH%"
-
-where gcc >nul 2>&1
-if errorlevel 1 (
-    echo ERROR: GCC not found.
-    exit /b 1
-)
-
-go build -buildmode=c-shared -o "%WIN%\runtime.dll" .\cmd\server
-
-if errorlevel 1 (
-    echo.
-    echo ERROR: Failed to build Windows runtime.dll
-    exit /b 1
-)
-
-if exist "%WIN%\runtime.h" del /q "%WIN%\runtime.h"
-if not exist "%WIN%\runtime.dll" (
-    echo.
-    echo ERROR: runtime.dll was not created.
-    exit /b 1
-)
-
-echo runtime.dll OK
-echo.
-
-REM ============================================================
-REM [6/9] Build Linux runtime
-REM ============================================================
-
-echo [6/9] Building Linux runtime...
-echo.
-
-cd /d "%ROOT%" || (
-    echo ERROR: Cannot enter project root.
-    exit /b 1
-)
-
-set "GOOS=linux"
-set "GOARCH=amd64"
-set "CGO_ENABLED=0"
-
-go build -o "%LINUX%\runtime" .\cmd\server
-
-if errorlevel 1 (
-    echo.
-    echo ERROR: Failed to build Linux runtime.
-    exit /b 1
-)
-
-if not exist "%LINUX%\runtime" (
-    echo.
-    echo ERROR: Linux runtime was not created.
-    exit /b 1
-)
-
-echo Linux runtime OK
-echo.
 
 REM ============================================================
 REM [7/9] Build C++ Elsana Launcher
 REM ============================================================
 
-echo [7/9] Building C++ elsana.exe...
+echo [7/9] Building C++ app.exe...
 echo.
 
 cd /d "%LAUNCHER%" || (
@@ -295,7 +193,7 @@ if not exist "launcher.ico" (
 
 if exist "launcher.res" del /q "launcher.res"
 if exist "main.obj" del /q "main.obj"
-if exist "elsana.exe" del /q "elsana.exe"
+if exist "app.exe" del /q "app.exe"
 
 rc launcher.rc
 if errorlevel 1 (
@@ -309,12 +207,12 @@ if not exist "launcher.res" (
     exit /b 1
 )
 @REM  ini with terminal 
-@REM  cl /EHsc /std:c++17 main.cpp launcher.res /Fe:elsana.exe /link ole32.lib
+@REM  cl /EHsc /std:c++17 main.cpp launcher.res /Fe:app.exe /link ole32.lib
 
 cl /EHsc /std:c++17 ^
     main.cpp ^
     launcher.res ^
-    /Fe:elsana.exe ^
+    /Fe:app.exe ^
     /link ^
     /SUBSYSTEM:WINDOWS ^
     ole32.lib ^
@@ -322,17 +220,17 @@ cl /EHsc /std:c++17 ^
 
 if errorlevel 1 (
     echo.
-    echo ERROR: Failed to build elsana.exe
+    echo ERROR: Failed to build app.exe
     exit /b 1
 )
 
-if not exist "%LAUNCHER%\elsana.exe" (
+if not exist "%LAUNCHER%\app.exe" (
     echo.
-    echo ERROR: elsana.exe was not created.
+    echo ERROR: app.exe was not created.
     exit /b 1
 )
 
-echo elsana.exe OK
+echo app.exe OK
 echo.
 
 REM ============================================================
@@ -342,9 +240,9 @@ REM ============================================================
 echo [8/9] Assembling Windows distribution...
 echo.
 
-move /y "%LAUNCHER%\elsana.exe" "%WIN%\elsana.exe" >nul
+move /y "%LAUNCHER%\app.exe" "%WIN%\app.exe" >nul
 if errorlevel 1 (
-    echo ERROR: Failed to copy elsana.exe
+    echo ERROR: Failed to copy app.exe
     exit /b 1
 )
 
@@ -414,18 +312,13 @@ echo.
 
 echo Checking Windows files...
 
-if not exist "%WIN%\elsana.exe" (
-    echo ERROR: elsana.exe missing.
+if not exist "%WIN%\app.exe" (
+    echo ERROR: app.exe missing.
     exit /b 1
 )
 
 if not exist "%WIN%\integrator.dll" (
     echo ERROR: integrator.dll missing.
-    exit /b 1
-)
-
-if not exist "%WIN%\runtime.dll" (
-    echo ERROR: runtime.dll missing.
     exit /b 1
 )
 
@@ -442,21 +335,11 @@ if not exist "%WIN%\python311.dll" (
 echo Windows files OK
 echo.
 
-echo Checking Linux runtime...
-
-if not exist "%LINUX%\runtime" (
-    echo ERROR: Linux runtime missing.
-    exit /b 1
-)
-
-echo Linux runtime OK
-echo.
-
 echo Checking installer...
 
-if not exist "%BUILD%\Elsana-Setup.exe" (
-    echo ERROR: Elsana-Setup.exe missing.
-    echo Expected: %BUILD%\Elsana-Setup.exe
+if not exist "%BUILD%\app-setup.exe" (
+    echo ERROR: app-setup.exe missing.
+    echo Expected: %BUILD%\app-setup.exe
     exit /b 1
 )
 
@@ -469,7 +352,7 @@ echo ========================================
 echo.
 
 echo Windows:
-echo   %WIN%\elsana.exe
+echo   %WIN%\app.exe
 echo   %WIN%\integrator.dll
 echo   %WIN%\runtime.dll
 echo   %WIN%\renderer.dll
@@ -481,7 +364,7 @@ echo   %LINUX%\runtime
 echo.
 
 echo Installer:
-echo   %BUILD%\Elsana-Setup.exe
+echo   %BUILD%\app-setup.exe
 echo.
 
 echo ========================================

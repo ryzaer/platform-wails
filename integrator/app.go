@@ -28,7 +28,8 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 
-	go a.ensureServer()
+	// // start runtime awal disini
+	// go a.ensureServer()
 }
 
 // onSecondInstanceLaunch is called when the user
@@ -50,47 +51,47 @@ func (a *App) OpenBrowser(url string) {
 	runtime.BrowserOpenURL(a.ctx, url)
 }
 
-// ensureServer loads runtime.dll and waits
-// until the Go server is ready.
-func (a *App) ensureServer() {
+// // ensureServer loads runtime.dll and waits
+// // until the Go server is ready.
+// func (a *App) ensureServer() {
 
-	// Runtime already running?
-	if a.checkHealth() {
-		return
-	}
+// 	// Runtime already running?
+// 	if a.checkHealth() {
+// 		return
+// 	}
 
-	// Start Go runtime DLL.
-	if err := a.startRuntime(); err != nil {
+// 	// Start Go runtime DLL.
+// 	if err := a.startRuntime(); err != nil {
 
-		runtime.MessageDialog(
-			a.ctx,
-			runtime.MessageDialogOptions{
-				Title:   "Elsana",
-				Message: err.Error(),
-			},
-		)
+// 		runtime.MessageDialog(
+// 			a.ctx,
+// 			runtime.MessageDialogOptions{
+// 				Title:   "Elsana",
+// 				Message: err.Error(),
+// 			},
+// 		)
 
-		return
-	}
+// 		return
+// 	}
 
-	// Wait until Go server is ready.
-	for i := 0; i < 30; i++ {
+// 	// Wait until Go server is ready.
+// 	for i := 0; i < 30; i++ {
 
-		if a.checkHealth() {
-			return
-		}
+// 		if a.checkHealth() {
+// 			return
+// 		}
 
-		time.Sleep(500 * time.Millisecond)
-	}
+// 		time.Sleep(500 * time.Millisecond)
+// 	}
 
-	runtime.MessageDialog(
-		a.ctx,
-		runtime.MessageDialogOptions{
-			Title:   "Elsana",
-			Message: "Runtime berhasil dijalankan, tetapi server tidak merespons.",
-		},
-	)
-}
+// 	runtime.MessageDialog(
+// 		a.ctx,
+// 		runtime.MessageDialogOptions{
+// 			Title:   "Elsana",
+// 			Message: "Runtime berhasil dijalankan, tetapi server tidak merespons.",
+// 		},
+// 	)
+// }
 
 // checkHealth checks the Go runtime.
 func (a *App) checkHealth() bool {
