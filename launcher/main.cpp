@@ -311,24 +311,22 @@ vector<wstring> GetArguments(
 void PrintHelp()
 {
     std::wcout << L"\n";
-    std::wcout << L"Elsana Launcher\n";
+    std::wcout << L"App Launcher\n";
     std::wcout << L"\n";
 
     std::wcout << L"Usage:\n";
-    std::wcout << L"  launcher.exe\n";
-    std::wcout << L"  launcher.exe --gui\n";
-    std::wcout << L"  launcher.exe --core <command> [arguments]\n";
-    std::wcout << L"  launcher.exe --core <command> [arguments] [--serial <file>]\n";
+    std::wcout << L"  app.exe\n";
+    std::wcout << L"  app.exe --gui\n";
+    std::wcout << L"  app.exe --core <command> [arguments]\n";
+    std::wcout << L"  app.exe --core <command> [arguments] [--serial <file>]\n";
 
     std::wcout << L"\n";
 
     std::wcout << L"Examples:\n";
-    std::wcout << L"  launcher.exe --core hello\n";
-    std::wcout << L"  launcher.exe --core hello --serial tmp\\serial-XXXXXXX.txt\n";
-    std::wcout << L"  launcher.exe --core print invoice.yml\n";
-    std::wcout << L"  launcher.exe --core print invoice.yml --serial tmp\\serial-XXXXXXX.txt\n";
-    std::wcout << L"  launcher.exe --core qr \"https://elsana.app\"\n";
-    std::wcout << L"  launcher.exe --core pdf invoice.yml\n";
+    std::wcout << L"  app.exe --core hello\n";
+    std::wcout << L"  app.exe --core hello --serial tmp\\serial-XXXXXXX.txt\n";
+    std::wcout << L"  app.exe --core print invoice.yml\n";
+    std::wcout << L"  app.exe --core print invoice.yml --serial tmp\\serial-XXXXXXX.txt\n";
 
     std::wcout << L"\n";
 }

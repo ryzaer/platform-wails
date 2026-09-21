@@ -2,7 +2,7 @@
 setlocal EnableExtensions
 
 echo ========================================
-echo             ELSANA BUILD
+echo             APP BUILD
 echo ========================================
 echo.
 
@@ -139,7 +139,7 @@ echo.
 
 
 REM ============================================================
-REM [7/9] Build C++ Elsana Launcher
+REM [7/9] Build C++ App Launcher
 REM ============================================================
 
 echo [7/9] Building C++ app.exe...
@@ -280,7 +280,7 @@ if not exist "%ISCC%" (
 )
 
 if not exist "%ISS%" (
-    echo ERROR: Elsana.iss not found.
+    echo ERROR: Installer.iss not found.
     echo Expected: %ISS%
     exit /b 1
 )
@@ -298,7 +298,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo Elsana Setup OK
+echo App Setup OK
 echo.
 
 REM ============================================================
