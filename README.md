@@ -1,10 +1,6 @@
 # platform-wails
 
-A prototype **Go + Wails application framework** for building desktop and server-capable applications with a shared application layer.
-
-This project is intentionally **not tied to Elsana**.
-
-It is a framework/prototype environment for testing an architecture where the same Go application can provide:
+A prototype **Wails extra application** for building desktop and server-capable applications with a shared application layer. Here is environment for testing an architecture where the same Go application can provide:
 
 - a Wails desktop application
 - a browser/server application
