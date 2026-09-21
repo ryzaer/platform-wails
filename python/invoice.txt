@@ -1,0 +1,4 @@
+INVOICE
+Number: INV-260919-0001
+Customer: Budi
+Total: 125000

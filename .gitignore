@@ -1,5 +1,6 @@
-# Object file
-*.o
-
-# Ada Library Information
-*.ali
+launcher/build
+launcher/sdk
+.vscode
+python/*.build
+python/*.dist
+internal/*.zip
