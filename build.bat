@@ -138,11 +138,12 @@ echo integrator.dll OK
 echo.
 
 
+
 REM ============================================================
-REM [7/9] Build C++ App Launcher
+REM [7/9] Build C++ App Launcher using MSYS2 UCRT64
 REM ============================================================
 
-echo [7/9] Building C++ app.exe...
+echo [7/9] Building C++ app.exe with MSYS2 UCRT64...
 echo.
 
 cd /d "%LAUNCHER%" || (
@@ -150,29 +151,20 @@ cd /d "%LAUNCHER%" || (
     exit /b 1
 )
 
-set "VCVARS=C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"
+set "MSYS2_BIN=C:\msys64\ucrt64\bin"
+set "PATH=%MSYS2_BIN%;%PATH%"
 
-if not exist "%VCVARS%" (
-    echo ERROR: Visual Studio x64 environment not found.
-    echo Expected: %VCVARS%
+where g++ >nul 2>&1
+if errorlevel 1 (
+    echo ERROR: G++ not found.
+    echo Expected: %MSYS2_BIN%\g++.exe
     exit /b 1
 )
 
-call "%VCVARS%"
+where windres >nul 2>&1
 if errorlevel 1 (
-    echo ERROR: Failed to initialize Visual Studio x64 environment.
-    exit /b 1
-)
-
-where cl >nul 2>&1
-if errorlevel 1 (
-    echo ERROR: cl.exe not found.
-    exit /b 1
-)
-
-where rc >nul 2>&1
-if errorlevel 1 (
-    echo ERROR: rc.exe not found.
+    echo ERROR: windres not found.
+    echo Expected: %MSYS2_BIN%\windres.exe
     exit /b 1
 )
 
@@ -191,32 +183,40 @@ if not exist "launcher.ico" (
     exit /b 1
 )
 
+REM Clean previous build artifacts
+if exist "launcher-res.o" del /q "launcher-res.o"
 if exist "launcher.res" del /q "launcher.res"
 if exist "main.obj" del /q "main.obj"
 if exist "app.exe" del /q "app.exe"
 
-rc launcher.rc
+REM Compile Windows resources, including application icon
+windres launcher.rc -O coff -o launcher-res.o
+
 if errorlevel 1 (
     echo.
-    echo ERROR: Failed to compile launcher resource.
+    echo ERROR: Failed to compile launcher resources.
     exit /b 1
 )
 
-if not exist "launcher.res" (
-    echo ERROR: launcher.res was not created.
+if not exist "launcher-res.o" (
+    echo ERROR: launcher-res.o was not created.
     exit /b 1
 )
-@REM  ini with terminal 
-@REM  cl /EHsc /std:c++17 main.cpp launcher.res /Fe:app.exe /link ole32.lib
 
-cl /EHsc /std:c++17 ^
-    main.cpp ^
-    launcher.res ^
-    /Fe:app.exe ^
-    /link ^
-    /SUBSYSTEM:WINDOWS ^
-    ole32.lib ^
-    shell32.lib
+REM Build native Windows launcher
+REM Static GCC/C++ runtime; Windows APIs remain dynamic.
+g++ main.cpp launcher-res.o -o app.exe ^
+    -std=c++17 ^
+    -Os -s ^
+    -ffunction-sections ^
+    -fdata-sections ^
+    -Wl,--gc-sections ^
+    -municode ^
+    -mwindows ^
+    -static-libgcc ^
+    -static-libstdc++ ^
+    -lole32 ^
+    -lshell32
 
 if errorlevel 1 (
     echo.
@@ -224,14 +224,16 @@ if errorlevel 1 (
     exit /b 1
 )
 
-if not exist "%LAUNCHER%\app.exe" (
-    echo.
+if not exist "app.exe" (
     echo ERROR: app.exe was not created.
     exit /b 1
 )
 
-echo app.exe OK
 echo.
+echo Launcher build OK
+dir "app.exe"
+echo.
+
 
 REM ============================================================
 REM [8/9] Assemble Windows Distribution
@@ -245,6 +247,23 @@ if errorlevel 1 (
     echo ERROR: Failed to copy app.exe
     exit /b 1
 )
+
+
+REM Copy MinGW runtime DLL still required by launcher
+if not exist "%MSYS2_BIN%\libwinpthread-1.dll" (
+    echo ERROR: libwinpthread-1.dll not found.
+    exit /b 1
+)
+
+copy /y "%MSYS2_BIN%\libwinpthread-1.dll" "%WIN%\libwinpthread-1.dll" >nul
+
+if errorlevel 1 (
+    echo ERROR: Failed to copy libwinpthread-1.dll
+    exit /b 1
+)
+
+echo libwinpthread-1.dll OK
+echo.
 
 move /y "%INTEGRATOR%\integrator.dll" "%WIN%\integrator.dll" >nul
 if errorlevel 1 (

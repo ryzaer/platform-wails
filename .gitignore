@@ -1,5 +1,6 @@
 launcher/build
 launcher/sdk
+launcher/*.o
 .vscode
 python/*.build
 python/*.dist
