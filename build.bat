@@ -21,6 +21,11 @@ set "PYTHON_RENDERER=%PYTHON_DIST%\renderer.dll"
 set "ISCC=C:\Program Files\Inno Setup 7\ISCC.exe"
 set "ISS=%ROOT%launcher\Installer.iss"
 
+if not exist "%ISCC%" (
+    echo ERROR: Inno Setup not found, must install Inno Setup 7.
+    exit /b 1
+)
+
 echo ROOT       : %ROOT%
 echo PYTHON     : %PYTHON%
 echo INTEGRATOR : %INTEGRATOR%
